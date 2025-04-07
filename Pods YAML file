@@ -1,0 +1,19 @@
+Kubernetes uzywa plików YAML jako danych wejściowych do tworzenia obiektow POD, repliki, wrdażania itd.
+
+Taki plik musi zawierać 4 podstawowe pola najwyższego poziomu (wcięcia mają 2 spacje):
+
+apiVersion: v1
+kind: Pod (w tym przypadku to Pod ale może też być: Service, ReplocaSet, Deploymnet)
+metadata:
+  name: myapp-pod
+  labels:
+
+.........
+
+Tworzenie pliku YAML w commandline (Windows, Linux):
+*vim pod.yml
+-> wprowadzamy dane do pliku
+*cat pod.yml -> otwiera dane pliku
+*kubectl apply -f pod.yml -> -f nazwa pliku 
+-> powyższa komenda uruchamia nowy POD
+
