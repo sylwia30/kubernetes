@@ -50,5 +50,18 @@ spec:
         image: myapp
   replicas: 3
   selector: -> indentyfikowanie podów, konieczny dla utworzenia replicaset
+    matchLabels:
+      type: front-end
 --------------
+kubectl create -f repl_setr.yaml
+kubectl get replicaset  -> wyświetla wszystkie ReplicaSet
+kubectl get pods -> wyświetla wszystkie 3 pody
 
+jak zmienić replicas: 3 na replicas: 6, mamy kilka sposobów na to:
+kubectl replace -f repl_setr.yaml
+kubectl scale --replicas=6 -f repl_setr.yaml
+kubectl scale --replicas=6 replicaset myapp-replicaset -f repl_setr.yaml
+-> replicaset to typ a myapp-replicaset to name 
+
+usuwanie:
+kubectl delete replicaset myapp-replicaset -> usuwa rozniez podległe pody
