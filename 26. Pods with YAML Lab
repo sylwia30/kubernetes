@@ -1,0 +1,22 @@
+kubectl run --help
+
+jak zobaczyć listę podów z podstawowymi informacjami (-o output):
+kubectl get pods -o wide
+
+kubectl get pods 
+co oznacza kolumna READY = 1/2 - ilość kontenerów w podzie
+2 konterery w podzie 
+to oznacza ze jeden kontener ma status running a drugi się nie uruchomił
+
+usuwanie poda
+kubectl delete pod nginx
+
+edycja pliku yaml
+kubectl edit pod nginx 
+lub 
+cat nginx.yaml
+vim -f nginx.yaml
+kubectl apply -f file_name.yaml
+
+kubectl run nginx --image=nginx123 --dry-run=client -o yaml
+
