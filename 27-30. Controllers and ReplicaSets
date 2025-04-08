@@ -53,6 +53,21 @@ spec:
     matchLabels:
       type: front-end
 --------------
+kubectl get replicaset
+skrócona wersja:
+kubectl get rs
+--------------
+
+kubectl get replicaset
+jeśli mamy kila podów ale w kolumnie Ready jest wartość O, a Desired i Currentjest 4, to sprawdzamy coś sie dzieje w tych podach
+w ktorych zapewne jest jakis error 
+kubectl descibe pod nazwa_poda
+--------------
+wartosci w tier wszedzie muszą być takie same
+--------------
+kubectl explain replicaset
+cos na zasadzie help, otrzymujemy inforacje co powinno się znależć w pliku replicaset
+--------------
 kubectl create -f repl_setr.yaml
 kubectl get replicaset  -> wyświetla wszystkie ReplicaSet
 kubectl get pods -> wyświetla wszystkie 3 pody
@@ -63,6 +78,7 @@ kubectl scale --replicas=6 -f repl_setr.yaml
 kubectl scale --replicas=6 replicaset myapp-replicaset -f repl_setr.yaml
 -> replicaset to typ a myapp-replicaset to name 
 
+kubectl scale replicaset new-replica-scale --replicas=5
 usuwanie:
 kubectl delete replicaset myapp-replicaset -> usuwa rozniez podległe pody
 ---------
