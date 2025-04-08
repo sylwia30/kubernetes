@@ -1,4 +1,4 @@
-ReplicaSets jest nową wersją Replication Controllers 
+ReplicaSets jest nową wersją Replication Controllers (27 i 28)
 
 Replication Controllers tworzy wiele instancji Poda co okrśla się w sekcji spec w pliku yaml
 -------------------
@@ -65,3 +65,27 @@ kubectl scale --replicas=6 replicaset myapp-replicaset -f repl_setr.yaml
 
 usuwanie:
 kubectl delete replicaset myapp-replicaset -> usuwa rozniez podległe pody
+---------
+kubectl get pods
+-> 3 działające pody
+kubectl delete pod myapp-replicaset-hdy57
+kubectl get pods
+-> wciąż są 3 działające pody bo replicaset po usunięciu utworzył brakujacy 1 pod
+
+kubectl describe replicaset myapp-replicaset
+w sekcji Events widać już 4 pody
+Case 2:
+jeśli utworzymy nowy pod z nową templatką bez replicaset ale z tą samą nazwą Kubernetes usunie go bo w poprzednim template
+mamy wyznaczone jedynie 3 pody które mają powstać
+
+---------
+zmiana replicas z 3 na 4
+kubectl edit replicaset myapp-replicaset
+system przekieruje nas do edycji zapamietanego przez Kubernetesa obrazu pliku i pozwoli na edycję 
+kubectl get pods
+-> 4 działające pody
+
+inna opcja edycji:
+kubectl scale replicaset myapp-replicaset --replicas=2
+kubectl get pods
+-> 2 działające pody
