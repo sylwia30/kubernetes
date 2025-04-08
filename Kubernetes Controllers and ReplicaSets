@@ -1,3 +1,0 @@
-ReplicaSets jest nową wersją Replication Controllers 
-
-Replication Controllers tworzy wiele instancji Poda co okrśla się w sekcji spec w pliku yaml

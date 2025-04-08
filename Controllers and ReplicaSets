@@ -1,0 +1,54 @@
+ReplicaSets jest nową wersją Replication Controllers 
+
+Replication Controllers tworzy wiele instancji Poda co okrśla się w sekcji spec w pliku yaml
+-------------------
+apiVersion: v1
+kind: ReplicationControllers 
+metadata: -> Replication Controllers 
+  name: postgres 
+  labels:
+    app: postgres
+    type: front-end
+spec: -> Replication Controllers 
+  template:
+    metadata: -> Pod
+      name: postgres 
+      labels:
+        app: postgres
+        type: front-end
+    spec: -> Pod
+      containers:
+      - name: postgres
+        image: postgres
+  replicas: 3 -> uruchomi 3 repliki
+--------------
+kubectl create -f repl_contr.yaml
+kubectl get replicationcontroller  -> wyświetla wszystkie Replication Controllers 
+kubectl get pods -> wyświetla wszystkie 3 pody
+
+ReplicaSets
+selector w template to głowna różnica pomiedzy replicaset a replicationconroller
+
+--------------
+apiVersion: apps/v1 -> inna nazwa niż w przypadku zwykłego poda
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template:
+    metadata:
+      name: myapp-pod 
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+      - name: myapp-replicaset
+        image: myapp
+  replicas: 3
+  selector: -> indentyfikowanie podów, konieczny dla utworzenia replicaset
+--------------
+
