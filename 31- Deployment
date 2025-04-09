@@ -1,1 +1,9 @@
+Deployment
+różnice pomiedzy Deployment a plikami Replicaset:
+apiVersion: apps/v1
+kind: Deployment
 
+kubectl create -f deployment-definition.yaml
+kubeclt get deploymnets
+kubectl get replicaset
+kubectl get pods
