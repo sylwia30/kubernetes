@@ -1,0 +1,46 @@
+Deployment
+różnice pomiedzy Deployment a plikami Replicaset:
+apiVersion: apps/v1
+kind: Deployment
+
+kubectl create -f deployment-definition.yaml
+kubeclt get deploymnets
+kubectl get replicaset
+kubectl get pods
+
+kubectl get all
+
+kubectl create deployment --help
+
+Update and Rollback
+Recreate strategia mówi o tym że najpierw kasujemy wszystkie instacje aplikacji starej wersji a potem tworzymy nowe instacje 
+z nową wesją  jednak pomiędzy kasowaniem starej a wgraniem nowej aplikacja nie działa wiec to jest zła metoda. Lepszą jest Rolling Update.
+
+Wpisujac ponizsza komendę widac dwa wiersze deploymentu jeden z zerami (usuniete instancje) i drugi z iloscia nowych instancji:
+kubectl get replicasets
+
+Rolling Update jest defoultową metodą stretegii deploymentu nowych wersji, polega na tym ze kasuje sie jedną starą instacje 
+i zastepuje go nowym z nową wersją i tak z każdą instacją
+
+Zmiana wersji instacji w pliku yaml jest tutaj:
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: myapp-deployment
+.....
+    spec:
+      containers:
+      - name: myapp_container
+        image: myapp_v_1.1.1
+
+a potem uruchamiany komendę :
+kubectl apply -f deployment.yaml
+
+lub za pomocą komendy (trzeba tu uwazac z nazwami aplikacji i image itd):
+kubectl set image deployment/myapp-deployment myapp_container=myapp_v_1.2.1
+
+jesli coś poszło nie tak z nową wersją i chcemy wrócić do starej to uzywamy komendy (nowe wersje sie kasuja i przywracae sa stare)::
+kubectl rollout undo deployment/myapp-deployment
+
+lub za pomocą komendy ponizszej komendy mozemy zaobserwować że teraz pierwszy wiersz ma liczny z drugi wiersz z nową wersją ma 0:
+kubectl get replicasets
