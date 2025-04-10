@@ -44,3 +44,27 @@ kubectl rollout undo deployment/myapp-deployment
 
 lub za pomocą komendy ponizszej komendy mozemy zaobserwować że teraz pierwszy wiersz ma liczny z drugi wiersz z nową wersją ma 0:
 kubectl get replicasets
+
+podsumowanie komend:
+1. Tworzenie deploymentu:
+kubectl create -f deployment-definition.yaml
+
+1a. Po dodaniu flagi --record i uruchomieniu komendy history w polu change cause widzimy uruchomioną ówcześnie komnedę
+-> kubectl create -f deployment-definition.yaml --record
+i w decribe deployment w polu Adnotation ta komenda też jest widoczna.
+Tą flagę --record możemy dodawać również do komend kubectl edit, set itd
+
+kubectl create -f deployment-definition.yaml --record
+kubectl rollout history deployment/myapp-deployment
+
+2. Lista depployments
+kubectl get deployments
+3. update deployments apply i set 
+kubectl apply -f deployment.yaml
+kubectl set image deployment/myapp-deployment nginx=nginx:1.2.1
+4. Status rollout deploymentu
+kubectl rollout status deployment/myapp-deployment
+5. Codniecie deploymentu
+kubectl rollout undo deployment/myapp-deployment
+6. Histodia deploymentu
+kubectl rollout history deployment/myapp-deployment
