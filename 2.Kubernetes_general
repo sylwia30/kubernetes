@@ -53,6 +53,27 @@ CONTROLLER - jest odpowiedzialny za orchiestrację, reaguje gdy node, kontener p
 
 CONTAINER RUNTIME - Uruchamia kontenery (Dockera)
 
-kubelet - jest agentem działającym na każdym nodzie w klastrze, jest odpowiedzialny za upewnienie się, że kontenery działają. 
+kubelet - jest agentem działającym na każdym worker nodzie w klastrze, jest odpowiedzialny za upewnienie się, że kontenery działają. 
+
+kubectl (kube) - commandline, narzędzie wiersza poleceń kube. Narzędzie to służy do wdrażania i zarządzania aplikacjami w klastrze Kubernetes. 
+Aby uzyskać informacje o klastrze, statusie nodów itp. 
+
+Master vs Worker Node
+__________________
+      Master      |    
+</>kube-apiserver |
+etcd              |
+controller        |
+scheduler         |
+__________________|
+*Master Node
+__________________
+      Node        |    
+</>kubelet        |
+Kontainer Runtime |
+--------------    |
+*Kubernetes       |
+__________________|
+*Worker node
 
 
