@@ -58,6 +58,11 @@ kubelet - jest agentem działającym na każdym worker nodzie w klastrze, jest o
 kubectl (kube) - commandline, narzędzie wiersza poleceń kube. Narzędzie to służy do wdrażania i zarządzania aplikacjami w klastrze Kubernetes. 
 Aby uzyskać informacje o klastrze, statusie nodów itp. 
 
+Komendy:
+kubectl run hello-minikube
+kubectl cluster-info
+kubectl get nodes
+
 Master vs Worker Node
 __________________
       Master      |    
