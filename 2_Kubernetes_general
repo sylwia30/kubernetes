@@ -1,0 +1,58 @@
+Kubernetes - technologia zarządzania i obsługi kontenerami (Cointainer Orchiestration). Jest też Docker Swarm do obsługi kontenerów 
+ale brakuje mu zaawansowanych funkcji w złożonych aplikacjach.
+
+Klaster - jest zbiorem połączonych węzłów (nodów)
+Node (Minions) - jest to węzeł (node) który jest maszyną fizyczną lub wirtualną na kórej zainstalowany jest Kubernetes i tam Kubernetes uruchamia kontenery 
+Worker node - tworzy się więcej nić jeden Node, jesli jeden node ulegnie awarii, aplikacja będzie dostępna z innych nodów. Plus obciążenie jest mniejsze.
+Master Node - to kolejny node z zainstalowanych Kubernetesem, skonfigurowany jako Master. Obsługuje nody w klastrze. 
+______________________________________
+              KLASTER
+
+__________________
+      Master      |    
+                  |
+*Kubernetes       |
+__________________|
+*Master Node
+__________________
+      Node        |    
+--------------    |
+Docker Kontener   |
+--------------    |
+*Kubernetes       |
+__________________|
+*Worker node
+__________________
+      Node        |    
+--------------    |
+Docker Kontener   |
+--------------    |
+*Kubernetes       |
+__________________|
+*Worker node
+______ERROR________
+      Node        |    
+--------------    |
+Docker Kontener   |
+--------------    |
+*Kubernetes       |
+__________________|
+*Worker node
+______________________________________
+
+COMPONENTY - podczas instalacji Kubernetesa instaluje się następujące komponenty:
+
+API SERVER - jest to interface dla Kubernetesa tj. użytkownicy, urządzenie zarządzające, interface wiersza poleceń
+
+etcd - przechowuje wartości kluczy używanych przez Kubernetes do przechowywania wszystkich danych używanych do zarządzania klastrem. 
+Jest odpowiedzialny za blokady w klastrze, aby upewnić sie że nie ma konflitów między Masters
+
+SCHEDULER - odpowiedzialny jest za dystrybucję pracy dla kontenerów w wielu nodach. Poszukuje nowo utworzonych kontenerów i przypisuje je do nodów kontener <=> node
+
+CONTROLLER - jest odpowiedzialny za orchiestrację, reaguje gdy node, kontener przestają działać. Podejmuje decyzję o wprowadzeniu nowych pojemników. 
+
+CONTAINER RUNTIME - Uruchamia kontenery (Dockera)
+
+kubelet - jest agentem działającym na każdym nodzie w klastrze, jest odpowiedzialny za upewnienie się, że kontenery działają. 
+
+
