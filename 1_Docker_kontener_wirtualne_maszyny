@@ -1,0 +1,56 @@
+Co to jest LXC (Linux Containers)
+
+LXC (Linux Containers) to technologia wbudowana w jądro Linuksa, która umożliwia uruchamianie wielu odizolowanych środowisk systemowych na jednym hoście.
+Każdy kontener LXC zachowuje się jak lekki system operacyjny — ma własny system plików, sieć, procesy itp., ale współdzieli jądro z hostem.
+Kontener LXC ma zazwyczaj pełne środowisko systemu (np. Ubuntu, Debian), można do niego zalogować się przez ssh lub lxc-attach.
+
+Co to jest Docker
+
+Docker to platforma, która wykorzystuje technologię kontenerów (w tym LXC w swoich początkach), ale wprowadza warstwę zarządzania, automatyzacji i standaryzacji.
+Docker upraszcza tworzenie, dystrybucję i uruchamianie kontenerów dzięki:
+    obrazom (Dockerfile → docker build)
+    rejestrom (Docker Hub - repozytorium Dockera)
+    łatwemu zarządzaniu (docker run, docker ps, docker compose)
+Docker nie używa już czystego LXC — dziś korzysta z własnego silnika kontenerów o nazwie runc (zgodnego ze standardem OCI – Open Container Initiative).
+
+System operacyjny np. Ubuntu składa się z:
+- jądra systemu operacyjnego (OS Kernel) - jest odpowiedzialny za interakcję ze sprzętem
+- zestawu oprogramowania - Ubuntu sam w sobie
+
+Docker nie jest przeznaczony do uruchamiania różnych systemów operacyjnych i jąder na tym samym sprzęcie Ubuntu <=> Windows.
+Mogą być różne systemy operacyjne ale jedno jądro 
+
+Kontenery vs wirtualne maszyny
+KONTENER:
+-------------------------------
+web server, MongoDB, Nodejs
+-------------------------------
+Docker
+-------------------------------
+OS
+-------------------------------
+Hardware Infrastructure
+-------------------------------
+
+WIRTUALNA MASZYNA:
+-------------------------------
+web server, MongoDB, Node.js
+-------------------------------
+Libraries | Dependecies
+-------------------------------
+OS
+-------------------------------
+Hardware Infrastructure
+-------------------------------
+Kompatybilność różnych komponentów (MogoDB, Nodejs itp) z bazowym systemem operacyjnym może się różnić, wersja bibliotek może być różna.
+Biblioteki muszą być aktualizowane dla jednego systemu podczas gdy dla drugiego musi być inna wersja.
+
+Container vs Docker Image
+
+Docker Image - obraz dla aplikacji z wersjami aplikacji itp. Zapisane są tu wszystkie biblioteki, setingsy, do uruchomienia aplikacji.
+
+Docker Container
+Może być kilka kontererów Docker (Docker Container 1, Docker Container 2, Docker Container 3) budowanych na podstawie Docker Image
+
+
+
