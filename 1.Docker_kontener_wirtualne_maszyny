@@ -17,6 +17,10 @@ System operacyjny np. Ubuntu składa się z:
 - jądra systemu operacyjnego (OS Kernel) - jest odpowiedzialny za interakcję ze sprzętem
 - zestawu oprogramowania - Ubuntu sam w sobie
 
+OS Kernel
+Docker może uruchamiać dowolny system operacyjny o ile wszystkie są oparte na tym samym jądrze
+Docker wykorzystuje jądro hosta Dockera, które działa ze wszystkimi systemami operacyjnymi
+
 Docker nie jest przeznaczony do uruchamiania różnych systemów operacyjnych i jąder na tym samym sprzęcie Ubuntu <=> Windows.
 Mogą być różne systemy operacyjne ale jedno jądro 
 
