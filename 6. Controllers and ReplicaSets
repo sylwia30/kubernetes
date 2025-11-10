@@ -59,7 +59,7 @@ kubectl get rs
 --------------
 
 kubectl get replicaset
-jeśli mamy kila podów ale w kolumnie Ready jest wartość O, a Desired i Currentjest 4, to sprawdzamy coś sie dzieje w tych podach
+jeśli mamy kila podów ale w kolumnie Ready jest wartość O, a Desired i Current jest 4, to sprawdzamy coś sie dzieje w tych podach
 w ktorych zapewne jest jakis error 
 kubectl descibe pod nazwa_poda
 --------------
