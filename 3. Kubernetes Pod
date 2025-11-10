@@ -1,1 +1,58 @@
-Pod - 
+Pod - kontenery są enkapsulowane w obiekt Kubernetes jako Pod. Pod to pojedyncza instacja aplikacji, jest to najmniejszy obiekt w Kubernetes. 
+Pody zwykle mają releację 1 do 1 z kontenerami aplikacji. Nie dodajemy dodatkowych kontenerów do isniejącego Poda aby skalować swoją aplikację.
+NIE instaluje się dwóch kontenerów w jednym Podzie!
+
+Są sytuacje kiedy możemy mieć Pod z kontenerem i kontenerem pomocniczym (Helper container) który wykonuje jakieś zadania pomocnicze dla naszej aplikacji.
+np. przetwarzanie danych wprowadzonych przez użytkownika, przetwarzanie pliku wysłanego przez użytkonwika.
+Kiedy kontener umiera, umiera też pomocniczy kontener bo jest częścią tego samego Poda. 
+Kubernetes wymaga tworzenia kontenera pomocniczego z defoultu. 
+______________________________________
+              KLASTER
+__________________
+      Node        |    
+--------------    |
+POD               |
+Docker Kontener   |
+(Helper container)|
+--------------    |
+__________________|
+__________________
+      Node        |    
+--------------    |
+POD               |
+Docker Kontener   |
+(Helper container)|
+--------------    |
+__________________|
+______________________________________
+
+Multi container (Pod) <-> Helper conytainer komunikują sie ze sobą za pomocą Network, mają tą samą sieć.
+Mogą komunikować się ze sobą bezpośrednio odnosząc się do siebie jako lokalnego hosta.
+
+Komendy Docker:
+- docker run python-app (uruchamia kontener z aplikacą)
+- docker run python-app
+- docker run helper-link app1 (uruchamia kontener pomocniczy)
+- docker run helper-link app2 (uruchamia kontener pomocniczy)
+
+Komendy kubectl:
+- kubectl run nginx image-nginx
+ta komenda wdraża kontenet Docker poprzez utworzenie Poda. Najpierw tworzy Pod i wdraża instancję obrazu Docker nginx. 
+Obraz aplikacji pobiera za pomocą parametru Image z repo Docker Hub. Nazwa portu 'nginx' może byc dowolna ale nazwa image 
+musi być zbieżna z Docker Hub
+
+- kubectl get pods
+Lista podów w klastrze, mają statusy (np. Conteiner Creating -> Running)
+
+- kubectl describe pod ngnix
+Szczegóły Poda, np. nazwa poda, data startu, status, ID, lista kontenerów z nazwą image, image ID, port, i Events
+
+Events - lista etapów jakie się wykonały od czasu utworzenia Poda np. 
+- successfuly assigned defoult pod nginx to minikube
+- pulling image "nginx"
+- created container nginx
+- started container nginx
+
+- kubectl get pods -o wide
+Dodatkowe informacje dotyczące Poda
+
