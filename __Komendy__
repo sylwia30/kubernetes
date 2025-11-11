@@ -1,4 +1,6 @@
 PODSTAWOWE KOMENDY:
+kubectl get --help
+kubectl apply --help
 
 kubectl version --short
 Pokazuje wersję klienta i serwera Kubernetes	
@@ -66,10 +68,50 @@ delete pod nginx-pod
 Usuwa Pod	kubectl 
 
 KOMENDY - DEPLOYMENTY I SKALOWANIE:
-kubectl get deployments	Lista deploymentów	kubectl get deployments
+kubectl get deployments	
+Lista deploymentów
 
-kubectl rollout status deployment/<nazwa>	Sprawdza status wdrożenia	kubectl rollout status deployment/nginx-deployment
+kubectl rollout status deployment/<nazwa>	
+kubectl rollout status deployment/nginx-deployment
+Sprawdza status wdrożenia	
 
-kubectl rollout undo deployment/<nazwa>	Cofnięcie do poprzedniej wersji	kubectl rollout undo deployment/nginx-deployment
+kubectl rollout undo deployment/<nazwa>	
+kubectl rollout undo deployment/nginx-deployment
+Cofnięcie do poprzedniej wersji	
 
-kubectl scale deployment <nazwa> --replicas=N	Zmienia liczbę replik	kubectl scale deployment nginx --replicas=5
+kubectl scale deployment <nazwa> --replicas=N	
+kubectl scale deployment nginx --replicas=5
+Zmienia liczbę replik	
+
+KOMENDY - SERWISY I SIEĆ
+kubectl get services	
+kubectl get svc
+Lista usług	
+
+kubectl expose pod <pod> --port=80 --target-port=8080	
+kubectl expose pod nginx --port=80 --target-port=80 --type=NodePort
+Tworzy Service dla poda	
+
+kubectl describe service <nazwa>	
+kubectl describe svc nginx-service
+Szczegóły o Service	
+
+KOMENDY - DIAGNOSTYKA I DEBUGOWANIE	
+kubectl top nodes	
+Pokazuje użycie zasobów przez nody (jeśli metrics-server działa)	
+
+kubectl top pods	
+Pokazuje użycie CPU/RAM przez Pody
+
+kubectl get events	
+kubectl get events --sort-by=.metadata.creationTimestamp
+Wyświetla zdarzenia w klastrze	
+
+kubectl config view
+Pokazuje aktualną konfigurację kubeconfig
+
+kubectl api-resources
+Lista wszystkich dostępnych typów zasobów w API
+
+kubectl api-versions
+Lista dostępnych wersji API
