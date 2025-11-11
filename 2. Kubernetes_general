@@ -106,19 +106,131 @@ dostępność zasobów.
 Węzeł z najwyższym wynikiem wygrywa.
 
 ----------------CONTROLLER-----------------------------
-
-CONTROLLER - jest odpowiedzialny za orchiestrację, reaguje gdy node, kontener przestają działać. Podejmuje decyzję o wprowadzeniu nowych pojemników. 
+CONTROLLER (Controller Manager) - jest odpowiedzialny za orchiestrację, reaguje gdy node, kontener przestają działać. Podejmuje decyzję 
+o wprowadzeniu nowych pojemników. 
 Controller to proces, który ciągle monitoruje aktualny stan klastra i porównuje go z pożądanym stanem (tym, który zadeklarowałeś w YAML-u).
+Ty deklarujesz, jak ma wyglądać klaster (np. „chcę mieć 3 repliki Nginxa”).
+Controller pilnuje, żeby tak właśnie było — nawet jeśli coś się zepsuje.
+To jest serce mechanizmu „self-healing” (samouzdrawiania) w Kubernetesie.
+
+Przykład:
+1. Użytkownik tworzy obiekt (np. Deployment z 3 replikami) przez API Server.
+2. Obiekt zostaje zapisany w etcd (pożądany stan).
+3. Controller Manager uruchamia odpowiedni controller (np. ReplicaSet Controller), który:
+-sprawdza aktualny stan (np. ile Podów naprawdę działa),
+-porównuje go z pożądanym stanem,
+-podejmuje akcje, żeby wyrównać różnicę (np. tworzy brakujące Pody).
+4. Wszystko odbywa się przez API Server — kontrolery nigdy nie łączą się bezpośrednio z etcd.
+
+W Kubernetesie działa wiele różnych kontrolerów, każdy odpowiedzialny za inny rodzaj obiektów:
+
+Kontroler	/ Odpowiada za	/ Co robi
+ReplicaSet Controller	/ ReplicaSet	/ Utrzymuje zadaną liczbę replik Podów
+Deployment Controller	/ Deployment	/ Tworzy/aktualizuje ReplicaSet-y podczas rolloutów
+DaemonSet Controller	/ DaemonSet	/ Zapewnia, że na każdym węźle działa dany Pod
+Job Controller	/ Job	/ Uruchamia zadania do jednorazowego wykonania
+StatefulSet / Controller	/ StatefulSet	Zarządza Podami z trwałą tożsamością i storage
+Node Controller	/ Node	/ Monitoruje stan węzłów i usuwa niedostępne
+Service Controller	/ Service	/ Konfiguruje load balancing między Podami
+Endpoint Controller	/ Endpoints	/ Aktualizuje listę Podów w Service’ach
+
+Każdy z nich ma ten sam cel:
+👉 utrzymać stan rzeczywisty = stan pożądany
+
+Przykład:
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+
+Scenariusz:
+Działają 3 Pody.
+Jeden Pod się wysypuje.
+ReplicaSet Controller wykrywa, że działa tylko 2 Pody (stan aktualny ≠ pożądany).
+Tworzy nowy Pod.
+Znowu mamy 3 Pody — stan wyrównany
 
 ----------------CONTAINER RUNTIME-----------------------------
-CONTAINER RUNTIME - Uruchamia kontenery (Dockera)
+CONTAINER RUNTIME - Uruchamia kontenery (Dockera) w nodach Kubernetesa. Za właściwe utworzenie, uruchomienie, zatrzymanie 
+czy usunięcie kontenerów odpowiada właśnie container runtime. Działa na każdym Node w klastrze 
+CRI (Container Runtime Interface)
+
+Jak to działa w praktyce?
+1. Scheduler wybiera węzeł, na którym ma się uruchomić Pod.
+2. Kubelet na tym węźle pobiera definicję Pod’a z API Servera.
+3. Kubelet przekazuje polecenie do Container Runtime Interface (CRI).
+4. Container Runtime:
+- pobiera obraz kontenera z rejestru (np. Docker Hub, Harbor),
+- tworzy kontener (czyli izolowane środowisko z siecią, systemem plików, itp.),
+- uruchamia go i monitoruje jego stan.
+Kubelet następnie raportuje status kontenera z powrotem do API Servera.
+
+Przykład:
+1. Tworzysz Deployment z obrazem:
+containers:
+  - name: nginx
+    image: nginx:latest
+
+2. Scheduler wybiera węzeł node1.
+3. Kubelet na node1 mówi do runtime’a (np. containerd):
+„Hej, uruchom mi kontener z obrazem nginx:latest.”
+4. Containerd:
+- pobiera obraz z rejestru (jeśli go nie ma),
+- tworzy kontener,
+- uruchamia proces nginx.
+5. Kubelet raportuje do API Servera: „Pod nginx działa ✅”.
 
 ----------------kubelet-----------------------------
 kubelet - jest agentem działającym na każdym worker nodzie w klastrze, jest odpowiedzialny za upewnienie się, że kontenery działają. 
+Uruchamia, restartuje i usuwa KONTENERY w Podach
+kubelet działa na każdym węźle (Node) klastra Kubernetes.
+Bez niego żaden Pod nie zostałby faktycznie uruchomiony na węźle (Node).
+Agent (proces), który działa na każdym węźle klastra i odpowiada za uruchamianie oraz monitorowanie kontenerów zgodnie z tym, 
+co zleci control plane (API Server).
+kubelet to „strażnik węzła”, który:
+- odbiera polecenia od Kubernetes API Servera,
+- uruchamia kontenery poprzez Container Runtime (np. containerd, CRI-O),
+- pilnuje, żeby wszystko działało tak, jak opisano w manifestach (YAML-ach).
+
+Tworzy i uruchamia Pody:
+Kiedy kubelet dostaje informację, że ma uruchomić Pod:
+- pobiera definicję kontenerów,
+- przekazuje ją do Container Runtime Interface (CRI),
+- a ten faktycznie uruchamia kontenery.
+
+Monitoruje stan kontenerów
+Kubelet ciągle sprawdza, czy kontenery:
+- działają,
+- nie zużywają za dużo zasobów,
+- nie padły (jeśli padły — może je uruchomić ponownie).
+Jeśli coś się zmienia, kubelet raportuje status do API Servera.
+
+Przykład działania w praktyce:
+1. Tworzysz Deployment:
+replicas: 3
+containers:
+  - name: nginx
+    image: nginx
+
+2. Scheduler wybiera węzeł node1 dla jednego z Podów.
+3. API Server przekazuje kubeletowi na node1, że ma uruchomić ten Pod.
+4. Kubelet:
+- pobiera obraz nginx przez containerd,
+- uruchamia kontener,
+- montuje potrzebne zasoby (sieć, wolumeny),
+- monitoruje jego działanie.
+5. Jeśli kontener się wysypie — kubelet go automatycznie restartuje.
 
 ----------------kubectl-----------------------------
 kubectl (kube) - commandline, narzędzie wiersza poleceń kube. Narzędzie to służy do wdrażania i zarządzania aplikacjami w klastrze Kubernetes. 
 Aby uzyskać informacje o klastrze, statusie nodów itp. 
+
+dzie kubectl trzyma konfigurację?
+kubectl korzysta z pliku konfiguracyjnego:
+~/.kube/config
 
 Komendy:
 kubectl run hello-minikube
@@ -142,5 +254,11 @@ Kontainer Runtime |
 *Kubernetes       |
 __________________|
 *Worker node
+
+----------------------------------------------------------------------------------
+Przykład działania wszystkich komponentów na przykładzie uruchomienia nowego Pod’a:
+
+Tworzysz aplikację nginx — czyli wykonujesz:
+kubectl apply -f nginx.yaml
 
 
