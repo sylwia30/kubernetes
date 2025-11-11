@@ -1,0 +1,36 @@
+Udemy kurs: https://www.udemy.com/course/learn-kubernetes/?couponCode=KEEPLEARNING
+
+Instalacja:
+
+Instalacja aws cli 
+https://aws.amazon.com/cli/
+
+Instalacja winpty (for windows)
+
+Instalacja kubectl (for windows: https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/):
+komenda:
+curl.exe -LO "https://dl.k8s.io/v1.34.0/bin/windows/amd64/kubectl.exe.sha256"
+Dodać Path: C:\Users\{user} do Environment variables 
+Verify installation of kubectl kubectl version --client
+
+Można użyć też k9s Kubernetes: CLI\https://k9scli.io/
+
+Pycharm has this plugin for kubernetes (opcjonalnie)
+https://github.com/redhat-developer/intellij-kubernetes
+
+You can installed mini-kube on my windows machine to play with 
+https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download
+and started it with hyperv 
+minikube start --vm-driver=hyperv
+
+to switch to minikube context kubectl config get-contexts
+kubectl config use-context 
+
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+Kubectl autocomplete and k shorthand
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl ks' >>~/.bashrc
+Kubectl autocomplete and k shorthand 
+https://kubernetes.io/docs/reference/kubectl/quick-reference/#bash
