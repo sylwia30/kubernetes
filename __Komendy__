@@ -1,0 +1,75 @@
+PODSTAWOWE KOMENDY:
+
+kubectl version --short
+Pokazuje wersję klienta i serwera Kubernetes	
+
+kubectl cluster-info	
+Informacje o klastrze
+
+kubectl get all -n default
+Lista wszystkich zasobów w namespace	
+
+kubectl get nodes -o wide
+Lista węzłów (node’ów)	
+
+get pods -n kube-system	
+Lista Podów	kubectl 
+
+KOMENDY ZASOBÓW (Pods, Deployments, Services, itp.):
+
+kubectl get deployments
+Wyświetla obiekty danego typu	
+
+kubectl describe pod nginx-xyz
+kubectl describe <typ> <nazwa>	
+Szczegóły o obiekcie	
+
+kubectl create -f pod.yaml
+kubectl create -f <plik.yaml>	
+Tworzy obiekt z pliku	
+
+kubectl apply -f <plik.yaml>	
+kubectl apply -f deployment.yaml
+Tworzy lub aktualizuje obiekt (idempotentnie)	
+
+kubectl delete -f <plik.yaml>	
+kubectl delete -f pod.yaml
+Usuwa obiekt	
+
+kubectl delete <typ> <nazwa>	
+kubectl delete pod nginx-pod
+Usuwa konkretny obiekt	
+
+
+KOMENDY - OPERACJE NA PODACH:
+kubectl get pods -o wide
+Lista wszystkich Podów	
+
+kubectl logs <pod>	
+kubectl logs nginx-pod
+Wyświetla logi z kontenera
+
+kubectl logs <pod> -c <container>	
+kubectl logs mypod -c backend
+Logi z konkretnego kontenera w Podzie	
+
+kubectl exec -it <pod> -- /bin/bash	
+kubectl exec -it nginx-pod -- bash
+Wejście do kontenera (interaktywnie)	
+
+kubectl port-forward <pod> <lokalny_port>:<port_poda>	
+kubectl port-forward nginx-pod 8080:80
+Przekierowanie portu z poda na lokalny komputer	
+
+kubectl delete pod <nazwa>	
+delete pod nginx-pod
+Usuwa Pod	kubectl 
+
+KOMENDY - DEPLOYMENTY I SKALOWANIE:
+kubectl get deployments	Lista deploymentów	kubectl get deployments
+
+kubectl rollout status deployment/<nazwa>	Sprawdza status wdrożenia	kubectl rollout status deployment/nginx-deployment
+
+kubectl rollout undo deployment/<nazwa>	Cofnięcie do poprzedniej wersji	kubectl rollout undo deployment/nginx-deployment
+
+kubectl scale deployment <nazwa> --replicas=N	Zmienia liczbę replik	kubectl scale deployment nginx --replicas=5
