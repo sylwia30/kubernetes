@@ -25,7 +25,7 @@ Docker nie jest przeznaczony do uruchamiania różnych systemów operacyjnych i 
 Mogą być różne systemy operacyjne ale jedno jądro 
 
 Kontenery vs wirtualne maszyny
-KONTENER:
+KONTENER DOCKER:
 -------------------------------
 web server, MongoDB, Nodejs
 -------------------------------
@@ -51,7 +51,7 @@ Biblioteki muszą być aktualizowane dla jednego systemu podczas gdy dla drugieg
 
 Container vs Docker Image
 
-Docker Image - obraz dla aplikacji z wersjami aplikacji itp. Zapisane są tu wszystkie biblioteki, setingsy, do uruchomienia aplikacji.
+Docker Image - obraz dla aplikacji z wersjami aplikacji. Zapisane są tu wszystkie biblioteki, setingsy do uruchomienia aplikacji.
 
 Docker Container
 Może być kilka kontererów Docker (Docker Container 1, Docker Container 2, Docker Container 3) budowanych na podstawie Docker Image
