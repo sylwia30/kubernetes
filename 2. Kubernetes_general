@@ -261,4 +261,79 @@ Przykład działania wszystkich komponentów na przykładzie uruchomienia nowego
 Tworzysz aplikację nginx — czyli wykonujesz:
 kubectl apply -f nginx.yaml
 
+Krok 1. kubectl → API Server
+Użytkownik wysyła żądanie przez kubectl do API Servera (np. REST POST z definicją Pod’a).
+API Server:
+- sprawdza uprawnienia (RBAC),
+- waliduje manifest YAML,
+- zapisuje definicję Pod’a w bazie etcd.
 
+Stan etcd po tym kroku:
+Etcd zawiera informację: „Powinien istnieć Pod nginx (desired state), ale jeszcze nie jest uruchomiony.”
+
+Krok 2. Controller (control loop)
+Controller Manager (konkretnie ReplicationController lub Deployment Controller) monitoruje zmiany przez API Server.
+Widział nowy obiekt Pod, więc sprawdza: czy Pod istnieje fizycznie w klastrze?
+jeśli nie → należy go utworzyć.
+Controller niczego nie uruchamia sam — tylko aktualizuje status Pod’a w API Serverze:
+dodaje wpis: „Pod oczekuje na przypisanie węzła (nodeName = null)”.
+
+Krok 3. Scheduler obserwuje API Server i widzi nowy Pod bez przypisanego nodeName.
+Scheduler:
+- analizuje dostępne węzły (Node’y),
+- sprawdza zasoby, affinity, tainty itp.,
+- wybiera najlepszy węzeł (np. node1).
+Następnie aktualizuje Pod w API Serverze — dodaje Node
+
+Krok 4. Kubelet widzi nowy Pod przypisany do node1.
+Pobiera jego specyfikację i przekazuje do Container Runtime Interface (CRI).
+
+Krok 5. Container Runtime uruchamia kontenery
+pobiera obraz nginx:latest z rejestru,
+tworzy i uruchamia kontener w izolowanym środowisku,
+Po uruchomieniu, runtime zgłasza kubeletowi, że kontener działa.
+
+Krok 6. kubelet raportuje do API Servera
+Kubelet aktualizuje status Pod’a w API Serverze:
+status:
+  phase: Running
+  conditions:
+    - Ready: true
+API Server zapisuje nowy stan w etcd
+
+Krok 7. Kontrola ciągła (Controller Loop)
+Jeśli kontener padnie, kubelet zgłasza to do API Servera.
+Controller zauważa, że „stan aktualny ≠ stan pożądany” i może wymusić jego ponowne utworzenie.
+Proces zaczyna się od nowa — to właśnie mechanizm self-healing.
+
+Diagram:
+[ YOU ] 
+   │
+   ▼
+[kubectl] ───▶ [API Server] ───▶ [etcd]
+                     │
+                     ▼
+           [Controller Manager]
+                     │
+                     ▼
+               [Scheduler]
+                     │
+             (przypisuje node)
+                     ▼
+               [Kubelet na Node1]
+                     │
+                     ▼
+             [Container Runtime]
+                     │
+                     ▼
+                (Kontener działa)
+Wyobraź sobie, że Kubernetes to fabryka:
+
+Element	/ Odpowiednik w fabryce
+kubectl	/ Kierownik zleca nowe zadanie („Zrób 3 Nginxy”)
+API Server	/ Recepcja, która przyjmuje zlecenie i zapisuje je w systemie
+etcd	/ Baza danych z listą wszystkich zadań
+Scheduler	/ Planista decyduje, która maszyna wykona dane zadanie
+Controller	/ Nadzorca, który pilnuje, że wszystko się zgadza
+Kubelet	/ Operator maszyny wykonującej pracę
+Container / Runtime	Sama maszyna, która faktycznie tworzy produkt (kontener)
