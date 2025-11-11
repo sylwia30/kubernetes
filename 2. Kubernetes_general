@@ -42,10 +42,40 @@ ______________________________________
 
 COMPONENTY - podczas instalacji Kubernetesa instaluje się następujące komponenty:
 
-API SERVER - jest to interface dla Kubernetesa tj. użytkownicy, urządzenie zarządzające, interface wiersza poleceń
+API SERVER - jest to interface dla Kubernetesa tj. użytkownicy, urządzenie zarządzające, interface wiersza poleceń. 
+Działa jako główny punkt komunikacji między wszystkimi elementami systemu, wszystko co się dzieje w Klastrze przechodzi przez niego.
+Przyjmuje rządania (requests) od użytkowników, narzędzi (kubectl), kontenerów i innych komponentów. Waliduje i autorycuje te rządania,
+sprawdza, czy żądania są poprawne (np. czy YAML ma prawidłową strukturę, czy użytkownik ma uprawnienia).
+Zapisuje i odczutuje dane z etcd (bazy danych przechowującej stan klastra). Zapisuje stan klastra do etcd  (bazy danych, w której 
+przechowywany jest aktualny stan całego klastra).
+Udostępnia dane innym komponentom – np. kubelet, scheduler czy controller manager komunikują się z API Serverem, żeby wiedzieć, co mają robić.
 
-etcd - przechowuje wartości kluczy używanych przez Kubernetes do przechowywania wszystkich danych używanych do zarządzania klastrem. 
+Przykład:
+1. Administrator wpisuje:
+kubectl create pod --image=nginx
+2. kubectl wysyła żądanie do API Servera.
+3. API Server:
+- Sprawdza, czy użytkownik ma uprawnienia (RBAC, autoryzacja),
+- Waliduje żądanie,
+- Zapisuje nowy obiekt Pod w etcd.
+4. Controller Manager widzi, że pojawił się nowy Pod.
+5. Scheduler wybiera węzeł, na którym Pod ma się uruchomić.
+6. Kubelet na danym węźle kontaktuje się z API Serverem, pobiera definicję i uruchamia kontener.
+
+etcd - przechowuje wartości klucz-wartość używanych przez Kubernetes do przechowywania wszystkich danych używanych do zarządzania klastrem. 
+W etcd zapisany jest pełny, aktualny stan wszystkiego w klastrze.
 Jest odpowiedzialny za blokady w klastrze, aby upewnić sie że nie ma konflitów między Masters
+
+Przykłady danych w etcd:
+- definicje wszystkich Podów, Deploymentów, Service’ów, ConfigMap, itp.
+- informacje o użytkownikach, rolach i uprawnieniach (RBAC),
+- dane o statusie węzłów (Node),
+- dane konfiguracyjne dotyczące samego klastra.
+Można to sobie wyobrazić jak wewnętrzną bazę danych Kubernetes, w której zapisane są wszystkie obiekty API.
+Dane są trwale zapisane na dysku (nie znikają po restarcie klastra)
+Dostęp tylko przez API Server – inne komponenty nie łączą się bezpośrednio z etcd.
+Jeśli etcd się uszkodzi lub dane zostaną utracone — Kubernetes „traci pamięć” o tym, jakie obiekty miały istnieć w klastrze.
+Zwykle tworzy się kopie zapasowe (snapshoty) etcd
 
 SCHEDULER - odpowiedzialny jest za dystrybucję pracy dla kontenerów w wielu nodach. Poszukuje nowo utworzonych kontenerów i przypisuje je do nodów kontener <=> node
 
