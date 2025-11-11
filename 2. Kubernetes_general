@@ -42,6 +42,8 @@ ______________________________________
 
 COMPONENTY - podczas instalacji Kubernetesa instaluje się następujące komponenty:
 
+---------------API SERVER------------------------------
+
 API SERVER - jest to interface dla Kubernetesa tj. użytkownicy, urządzenie zarządzające, interface wiersza poleceń. 
 Działa jako główny punkt komunikacji między wszystkimi elementami systemu, wszystko co się dzieje w Klastrze przechodzi przez niego.
 Przyjmuje rządania (requests) od użytkowników, narzędzi (kubectl), kontenerów i innych komponentów. Waliduje i autorycuje te rządania,
@@ -62,6 +64,7 @@ kubectl create pod --image=nginx
 5. Scheduler wybiera węzeł, na którym Pod ma się uruchomić.
 6. Kubelet na danym węźle kontaktuje się z API Serverem, pobiera definicję i uruchamia kontener.
 
+-----------------etcd----------------------------
 etcd - przechowuje wartości klucz-wartość używanych przez Kubernetes do przechowywania wszystkich danych używanych do zarządzania klastrem. 
 W etcd zapisany jest pełny, aktualny stan wszystkiego w klastrze.
 Jest odpowiedzialny za blokady w klastrze, aby upewnić sie że nie ma konflitów między Masters
@@ -77,14 +80,43 @@ Dostęp tylko przez API Server – inne komponenty nie łączą się bezpośredn
 Jeśli etcd się uszkodzi lub dane zostaną utracone — Kubernetes „traci pamięć” o tym, jakie obiekty miały istnieć w klastrze.
 Zwykle tworzy się kopie zapasowe (snapshoty) etcd
 
-SCHEDULER - odpowiedzialny jest za dystrybucję pracy dla kontenerów w wielu nodach. Poszukuje nowo utworzonych kontenerów i przypisuje je do nodów kontener <=> node
+----------------SCHEDULER-----------------------------
+SCHEDULER - przypisuje nowe Pody do konkretnych węzłów (Node) w klastrze. Decyduje, na którym węźle (Node) zostanie uruchomiony nowy Pod.
+Odpowiedzialny jest za dystrybucję pracy dla kontenerów w wielu nodach. Poszukuje nowo utworzonych kontenerów i przypisuje je do nodów kontener <=> node. 
+
+Przykład:
+
+1. Tworzysz Pod (np. przez kubectl apply -f pod.yaml).
+2. API Server zapisuje ten obiekt w etcd.
+3. Scheduler zauważa, że Pod nie ma przypisanego węzła (.spec.nodeName jest puste).
+4. Scheduler:
+- zbiera informacje o wszystkich dostępnych węzłach,
+- filtruje je, aby wyeliminować te, które nie spełniają wymagań,
+- ocenia i wybiera najlepszy węzeł.
+5. Wynik (wybrany Node) przekazuje z powrotem do API Servera.
+6. API Server aktualizuje obiekt Pod w etcd.
+7. Kubelet na wybranym węźle widzi, że ma uruchomić ten Pod — i to robi.
+
+Wynagradzanie (Scoring)
+Dla węzłów, które przeszły filtr, scheduler nadaje punkty według różnych algorytmów:
+balansowanie obciążenia,
+lokalność danych,
+preferencje (preferredDuringScheduling),
+dostępność zasobów.
+Węzeł z najwyższym wynikiem wygrywa.
+
+----------------CONTROLLER-----------------------------
 
 CONTROLLER - jest odpowiedzialny za orchiestrację, reaguje gdy node, kontener przestają działać. Podejmuje decyzję o wprowadzeniu nowych pojemników. 
+Controller to proces, który ciągle monitoruje aktualny stan klastra i porównuje go z pożądanym stanem (tym, który zadeklarowałeś w YAML-u).
 
+----------------CONTAINER RUNTIME-----------------------------
 CONTAINER RUNTIME - Uruchamia kontenery (Dockera)
 
+----------------kubelet-----------------------------
 kubelet - jest agentem działającym na każdym worker nodzie w klastrze, jest odpowiedzialny za upewnienie się, że kontenery działają. 
 
+----------------kubectl-----------------------------
 kubectl (kube) - commandline, narzędzie wiersza poleceń kube. Narzędzie to służy do wdrażania i zarządzania aplikacjami w klastrze Kubernetes. 
 Aby uzyskać informacje o klastrze, statusie nodów itp. 
 
